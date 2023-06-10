@@ -1,0 +1,19 @@
+import random
+def seq_gen(generate_number=1000,mers=7):
+    seqs = []
+    residues_list = ['A', 'G', 'D', 'N', 'F', 'P', 'Q', 'C', 'E', 'H', 'I', 'K', 'L', 'M', 'R', 'S', 'T', 'V', 'W', 'Y']
+    for i in range(generate_number):
+        a =(random.choices(residues_list,k=mers))
+        seq = ''
+        seq = seq.join(a)
+        seqs.append(seq)
+    for i in seqs:
+        f = open('%s.fasta'%i,'w')
+        f.write('%s'%i)
+        f.close()
+    f = open('buildpep.sh','a+')
+    for i in seqs:
+        f.write('BuildPeptide.mpi.linuxgccrelease -in:file:fasta %s.fasta -out:file:o %s.pdb\n'%(i,i))
+    f.close()
+
+seq_gen()
