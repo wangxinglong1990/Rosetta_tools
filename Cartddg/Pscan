@@ -1,0 +1,33 @@
+#Create mutfiles for Cartesian ddG proline scanning
+#A protein sequence file has to be provided, writen in 'seq.txt'. By using this python file, a 'filepath' is where you wanna store the merged files, 'start_res' and 'finish_res' are residues you wanna mutate.
+#After everything done, proceed to your terminal and use 'bash run.sh' to start the progression.
+def proScan(filepath,start_res,finish_res,your_pdb):
+    residues = ['P']
+    with open ('cartddg_flag','w') as ddg_flag:
+        ddg_flag.write ('-ddg:iterations 3\n-ddg::cartesian\n-ddg::dump_pdbs False\n-bbnbrs 1\n-fa_max_dis 9.0\n-score::weights ref2015_cart\n-relax::cartesian\n-relax:min_type lbfgs_armijo_nonmonotone\n-ex1\n-ex2\n-use_input_sc\n-flip_HNQ\n-optimization::default_max_cycles 200\n-crystal_refine')
+        ddg_flag.close()
+    with open ('%s/run.sh'%filepath,'w') as runsh:
+        runsh.write ('#!/bin/bash\n')
+        runsh.close()
+    with open (r'%s/seq.txt'%filepath) as seq_file:
+        s1 = int(start_res)
+        s2 = int(finish_res)
+        seqlist=seq_file.readlines() 
+        for seq in seqlist:
+            res_list=seq[s1:s2]
+            single_res_list=list (res_list)
+            #print (single_res_list,'flag1')
+            for single_res in single_res_list:
+                s1+=1
+                for i,j in zip(range (1),residues):
+                    mutfile=single_res+str(s1)+j
+                    #print(mutfile)
+                    with open ('%s'%filepath+'/'+mutfile+'.mutfile','w') as new_file:
+                        new_file.write('total 1\n1\n%s'%mutfile)
+                        new_file.close()
+                        with open ('%s'%filepath+'/'+'run.sh','a+') as f:
+                            f.write('\ncd %s\ncartesian_ddg.mpi.linuxgccrelease -s %s.pdb @cartddg_flag -ddg:mut_file %s.mutfile'%(filepath,your_pdb,mutfile))
+                            f.close()
+    return('done')
+proScan('/home/xlw/XYM/model1/relax2nd/run',0,461,'final')
+#Remember to adjust the above values based on your need
