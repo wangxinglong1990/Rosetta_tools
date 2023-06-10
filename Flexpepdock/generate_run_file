@@ -1,0 +1,16 @@
+import os
+a=os.listdir()
+def run_file(nstruct=5):
+    for i in a:
+        if i[-3:] == 'pdb' and i[0] != str(1):
+            os.mkdir('%s'%i[:7])
+            cwd=os.getcwd()
+    
+            os.system('cp -r %s %s/%s/%s'%(i,cwd,i[:7],i))
+            os.system('cp -r 1.pdb %s/%s/1.pdb'% (cwd,i[:7]))
+            os.system('cat %s/%s/%s %s/%s/1.pdb > %s/%s/c.pdb' % (cwd, i[:7], i, cwd, i[:7], cwd, i[:7]))
+            f = open('%s/%s/1.sh'%(cwd,i[:7]),'w')
+            f.write('FlexPepDocking.mpi.linuxgccrelease -s c.pdb -nstruct %s -scorefile score.sc -min_receptor_bb -lowres_preoptimize -pep_refine -flexpep_score_only -ex1 -ex2aro -use_input_sc'%nstruct)
+            f.close()
+
+run_file()
