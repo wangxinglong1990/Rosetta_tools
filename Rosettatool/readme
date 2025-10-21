@@ -1,0 +1,3 @@
+The Cart.py is used to automatically generate files to run Rosetta Cartesian_ddg.
+The command as below:
+python $your_environment/Cart.py -sites xx,xx -cores xx
